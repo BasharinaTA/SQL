@@ -1,0 +1,352 @@
+-- Создание
+create database BookShop;
+use BookShop;
+
+create table Countries (
+	Id int auto_increment not null primary key,
+	Name nvarchar(50) not null check(Name <> N'') unique
+);
+
+create table Authors (
+	Id int auto_increment not null primary key, 
+	Name nvarchar(100) not null check(Name <> N''), 
+	Surname nvarchar(100) not null check(Surname <> N''),
+	CountryId int not null, 
+	foreign key (CountryId) references Countries(Id)
+);
+ 
+create table Shops (
+	Id int auto_increment not null primary key,
+	Name nvarchar(100) not null check(Name <> N''),
+	CountryId int not null,
+	foreign key (CountryId) references Countries(Id)
+);
+
+create table Themes (
+	Id int auto_increment not null primary key,
+	Name nvarchar(100) not null check(Name <> N'') unique
+);
+ 
+create table Books (
+	Id int auto_increment not null primary key, 
+    Name nvarchar(200) not null check(Name <> N''),
+	Pages int not null check(Pages > 0), 
+	Price decimal(7, 2) not null check(Price >= 0), 
+	PublishDate date not null check(PublishDate <= sysdate()),
+	AuthorId int not null, 
+	foreign key (AuthorId) references Authors(Id),
+	ThemeId int not null,
+	foreign key (ThemeId) references Themes(Id)
+);
+ 
+create table Sales (
+	Id int auto_increment not null primary key,
+	Price decimal(7, 2) not null check(Price >= 0), 
+	Quantity int not null check(Quantity > 0),
+	SaleDate date not null check(SaleDate <= sysdate())  default (sysdate()),
+	BookId int not null,
+	ShopId int not null,
+	foreign key (BookId) references Books(Id),
+	foreign key (ShopId) references Shops(Id)
+); 
+
+-- Заполнение 
+insert into themes (name) 
+values 
+('Детектив'), 
+('Детская литература'), 
+('Поэзия. Драматургия'), 
+('Программирование'), 
+('Психология'), 
+('Религия. Теология. Мифология'),
+('Фантастика'), 
+('Философские науки'),
+('Экономика. Управление. Предпринимательство');
+
+insert into countries (name) 
+values
+('Белоруссия'),
+('Великобритания'),
+('Германия'),
+('Грузия'),
+('Испания'),
+('Италия'),
+('Казахстан'),
+('Россия'), 
+('США'), 
+('Украина'),
+('Франция');
+
+insert into authors (name, surname, countryid)
+values 
+('Агата', 'Кристи', 2),
+('Борис', 'Акунин', 4),
+('Дэшил', 'Хэммет', 9),
+('Эрнст Теодор Амадей', 'Гофман', 3),
+('Михаил', 'Пришвин', 8),
+('Джованни Франческо', 'Родари', 6),
+('Анна ', 'Ахматова', 8),
+('Шарль', 'Бодлер', 11),
+('Чарльз', 'Петцольд', 2),
+('Дональд Эрвин', 'Кнут', 9),
+('Гэри', 'Чепмен', 9),
+('Зигмунд', 'Фрейд ', 3),
+('Стивен', 'Протеро', 9),
+('Айзек', 'Азимов', 9),
+('Сергей', 'Лукьяненко', 7),
+('Джон Рональд Руэл', 'Толкин', 2),
+('Жюль', 'Верн ', 11),
+('Фридрих', 'Ницше', 3),
+('Бертран', 'Рассел', 2),
+('Адам', 'Смит', 2),
+('Ричард', 'Брэнсон ', 2),
+('Герберт', 'Шилдт', 9);
+ 
+insert into shops (name, countryid)
+values 
+('Кнігарня №1', 1), 
+('№1 кітап дүкені', 7),
+('Книжный магазин №1', 8), 
+('Bookstore №1', 9),
+('Книгарня №1', 10); 
+
+insert into books (name, pages, price, publishdate, authorid, themeid)
+value
+('Убийство в "Восточном экспрессе"', 420, 269, '2020-10-21', 1, 1),
+('Десять негритят', 370, 437, '2019-05-11', 1, 1),
+('Загадочное происшествие в Стайлзе', 200, 288, '2020-10-19', 1, 1),
+('Азазель', 310, 199, '2010-05-21', 2, 1),
+('Турецкий гамбит', 210, 344, '2010-04-14', 2, 1),
+('Детская книга', 385, 249, '2010-06-15', 2, 2),
+('Большой налет', 288, 473, '1994-07-22', 3, 1),
+('Щелкунчик и Мышиный король', 33, 89, '2018-12-25', 4, 2),
+('Кладовая солнца (сборник)', 150, 118, '2013-01-12', 5, 2),
+('Лесные сказки и истории про животных', 274, 399, '2018-01-29', 5, 2),
+('Приключения Чиполлино', 264, 650, '2015-03-19', 6, 2),
+('Избранное', 70, 225, '2020-09-07', 7, 3),
+('Цветы Зла (сборник)', 100, 129.90, '2013-02-20', 8, 3),
+('Программирование для Microsoft Windows 8', 1008, 1289, '2016-01-29', 9, 4),
+('Код. Тайный язык информатики', 750, 449, '2019-11-07', 9, 4),
+('Искусство программирования. Том 1. Основные алгоритмы', 722, 2500, '2018-10-29', 10, 4),
+('Android. Программирование для профессионалов', 704, 900, '2021-10-29', 10, 4),
+('Microsoft Office', 1584, 2700, '2018-10-29', 10, 4),
+('Пять языков любви', 130, 258, '2013-12-16', 11, 5),
+('Психология масс и анализ человеческого «я» (сборник)', 260, 149, '2017-05-19', 12, 5),
+('Психопатология обыденной жизни', 250, 169, '2020-11-27', 12, 5),
+('Восемь религий, которые правят миром. Все об их соперничестве, сходстве и различиях', 540, 409, '2014-03-10', 13, 6),
+('Я, робот', 250, 149, '2019-03-19', 14, 7),
+('Черновик', 360, 450, '2010-07-20', 15, 7),
+('Чистовик', 320, 430, '2010-07-20', 15, 7),
+('Хоббит, или Туда и Обратно', 310, 465, '2017-03-13', 16, 2),
+('Братство кольца', 550, 780, '2016-12-25', 16, 7),
+('Пятнадцатилетний капитан', 410, 368, '2011-04-29', 17, 7),
+('Так говорил заратустра. Рождение трагедии или эллинство и пессимизм', 315, 719.20, '2017-12-02', 18, 8),
+('Антихрист. Проклятие христианству', 100, 62.38, '2012-12-03', 18, 8),
+('Брак и мораль', 300, 349, '2014-02-01', 19, 8),
+('Исследование о природе и причинах богатства народов', 1590, 249, '2011-05-04', 20, 9),
+('К черту всё! Берись и делай!', 240, 449, '2016-08-05', 21, 9),
+('C# 4.0 полное руководство', 1584, 3742, '2019-10-11', 22, 9);
+
+insert into sales (price, quantity, saledate, bookid, shopid)
+ values
+(650.00, 5, '2021-01-01', 1, 3),
+(700.00, 15, '2021-03-01', 1, 1),
+(700.00, 19, '2021-03-01', 1, 2),
+(700.00, 7, '2021-03-01', 1, 5),
+(730.00, 3, '2021-09-15', 1, 4),
+(730.00, 4, '2021-09-15', 1, 3),
+(357.00, 2, '2020-12-25', 2, 1),
+(377.00, 5, '2021-01-19', 2, 2),
+(377.00, 3, '2021-02-15', 2, 3),
+(377.00, 1, '2021-02-02', 2, 4),
+(397.00, 2, '2021-07-04', 2, 5),
+(400.00, 5, '2021-09-15', 2, 3),
+(288.00, 1, '2021-09-15', 3, 1),
+(450.00, 6, '2021-05-20', 4, 4),
+(450.00, 3, '2021-05-20', 4, 5),
+(500.00, 7, '2021-09-15', 4, 3),
+(500.00, 18, '2021-09-15', 4, 1),
+(435.00, 8, '2021-05-20', 5, 2),
+(455.00, 4, '2021-09-15', 5, 5),
+(119.00, 4, '2021-09-15', 8, 1),
+(119.00, 9, '2021-10-05', 8, 2),
+(119.00, 6, '2021-11-06', 8, 3),
+(119.00, 11, '2021-07-01', 8, 4),
+(400.00, 3, '2021-10-09', 24, 1),
+(400.00, 1, '2021-11-17', 24, 1),
+(400.00, 2, '2021-12-01', 24, 1),
+(400.00, 4, '2021-11-30', 24, 2),
+(400.00, 6, '2021-07-30', 24, 2),
+(400.00, 10, '2021-12-31', 24, 5),
+(400.00, 15, '2021-02-03', 24, 5),
+(465.00, 3, '2021-03-01', 11, 3),
+(465.00, 6, '2021-11-17', 11, 3),
+(465.00, 2, '2021-01-01', 11, 1),
+(465.00, 4, '2021-06-30', 11, 1),
+(465.00, 6, '2021-09-13', 11, 1),
+(465.00, 10, '2021-12-31', 11, 4),
+(465.00, 15, '2021-02-03', 11, 4);
+
+-- Запросы 
+-- 1. Показать все книги, количество страниц в которых больше 500, но меньше 650.
+select * from books b
+where b.pages > 500 and b.pages < 650;
+
+-- 2. Показать все книги, в которых первая буква названия либо «А», либо «З».
+select * from books b
+where b.name like 'а%' or b.name like 'a%' or name like 'з%';
+
+-- 3. Показать все книги жанра «Детектив», количество проданных книг более 30 экземпляров.
+select b.name as 'Название' from books b
+inner join themes t
+on b.themeid = t.id
+inner join sales s
+on b.id  = s.bookId
+where t.name = 'Детектив' 
+group by b.id 
+having sum(s.quantity) > 30;
+
+-- 4. Показать все книги, в названии которых есть слово «Microsoft», но нет слова «Windows».
+select * from books b
+where b.name Like '%Microsoft%' and b.name not like '%Windows%';
+
+-- 5. Показать все книги (название, тематика, полное имя автора в одной ячейке), цена одной страницы которых меньше 65 копеек.
+select 
+	b.name as 'Название', 
+    t.name as 'Тематика', 
+    concat_ws(' ', a.name, a.surname) as 'Автор' 
+from books b
+inner join themes t
+on b.themeid = t.id 
+inner join authors a
+on b.authorid = a.id
+where b.price/b.pages < 0.65;
+
+-- 6. Показать все книги, название которых состоит из 4 слов.
+select * from books b
+where b.name like '% % % %' and b.name not like '% % % % %';
+
+/* 7. Показать информацию о продажах в следующем виде:
+- Название книги, но, чтобы оно не содержало букву «А».
+- Тематика, но, чтобы не «Программирование».
+- Автор, но, чтобы не «Герберт Шилдт».
+- Цена, но, чтобы в диапазоне от 250 до 650 рублей.
+- Количество продаж, но не менее 8 книг.
+- Название магазина, который продал книгу, но он не должен быть в Украине или России.
+ */
+ select 
+	b.name as 'Название книги', 
+	t.name as 'Тематика', 
+	concat_ws(' ', a.name, a.surname) as 'Автор',
+	b.price as 'Цена',
+	sum(s.quantity) as 'Количество продаж',
+	ss.name as 'Название магазина'
+ from books b
+ inner join sales s
+ on b.id = s.bookid
+ inner join themes t
+ on b.themeid = t.id 
+ inner join authors a
+ on b.authorid = a.id 
+ inner join shops ss
+ on s.shopid = ss.id
+ inner join countries c
+ on ss.countryid = c.id
+ where 	(b.name  not like '%а%' and b.name not like '%a%') and
+		t.name <> 'Программирование' and 
+        (a.name <> 'Герберт' and a.surname <> 'Шилдт') and
+        (b.price between 250 and 650) and 
+        c.name not in ('Россия', 'Украина')
+group by ss.id,  b.id
+having  sum(s.quantity) >= 8;
+        
+/* 8. Показать следующую информацию в два столбца (числа в правом столбце приведены в качестве примера):
+- Количество авторов: 14
+- Количество книг: 47
+- Средняя цена продажи: 85.43 грн.
+- Среднее количество страниц: 650.6.
+*/
+select 'Количество авторов' as 'Колонка 1', count(*) as 'Колонка 2' from authors 
+union 
+select  'Количество книг' as 'Колонка 1', count(*)  as 'Колонка 2' from books 
+union 
+select  'Средняя цена продажи' as 'Колонка 1', concat(round(avg(price), 2), ' ' , 'руб.') as 'Колонка 2' from sales  
+union 
+select 'Среднее количество страниц' as 'Колонка 1', avg(pages)  as 'Колонка 2' from books; 
+
+-- 9. Показать тематики книг и сумму страниц всех книг по каждой из них.
+select  
+	t.name as 'Тематика книг', 
+	sum(b.pages) as 'Сумма страниц'
+from books b
+inner join themes t
+on b.themeid = t.id
+group by b.themeid;
+
+-- 10. Показать количество всех книг и сумму страниц этих книг по каждому из авторов.
+select  
+	concat(a.name, ' ', a.surname)  as 'Автор', 
+    count(*) as 'Количество всех книг', 
+    sum(b.pages) as 'Сумма страниц' 
+from  books b 
+inner join authors a
+on b.authorid = a.id 
+group by a.id;
+
+-- 11. Показать книгу тематики «Программирование» с наибольшим количеством страниц.
+select b.name as 'Наименование' from books b
+inner join themes t
+on b.themeid = t.id 
+where b.pages = (select max(b1.pages) from books b1
+				inner join themes t1 
+				on b1.themeid = t1.id
+				where t1.name = 'Программирование') and 
+	  t.name = 'Программирование';
+
+-- 12. Показать среднее количество страниц по каждой тематике, которое не превышает 400
+select 
+	t.name as 'Тематика', 
+    avg(b.pages) as 'Среднее количество страниц'
+from books b
+inner join themes t 
+on b.themeid = t.id
+group by t.id
+having avg(b.pages) <= 400;
+
+-- 13. Показать сумму страниц по каждой тематике, учитывая только книги с количеством 
+-- страниц более 350, и чтобы тематики были «Программирование», «Фантастика» и «Детская литература».
+select 	
+	t.name as 'Тематика',
+    sum(b.pages) as 'Сумма страниц' 
+from books b
+inner join themes t 
+on b.themeid = t.id 
+where t.name in ('Программирование', 'Фантастика', 'Детская литература') and b.pages > 350
+group by t.id; 
+
+-- 14. Показать информацию о работе магазинов: что, где, кем, когда и в каком количестве было продано.
+select 
+	b.name as 'Название книги', 
+    c.name as 'Название страны', 
+    ss.name as 'Название магазина',
+    s.saledate as 'Дата продажи', 
+    s.quantity as 'Количество проданных книг'    
+from sales s
+inner join shops ss
+on s.shopid = ss.id 
+inner join books b 
+on s.bookid = b.id 
+inner join countries c
+on ss.countryid = c.id
+order by b.name, c.id, s.saledate;
+ 
+-- 15. Показать самый прибыльный магазин.
+select 
+	ss.name as 'Название',  
+    sum(s.price * s.quantity) as 'Сумма' 
+from sales s
+inner join shops ss
+on s.shopid = ss.id 
+group by ss.id
+order by 2 desc
+limit 1; 
